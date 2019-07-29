@@ -17,12 +17,12 @@ yum install -y java-1.8.0-openjdk-devel vim wget curl git bind-utils
 # Check input parameters
 case "$1" in
         aws)
-            echo "server 169.254.169.123 prefer iburst minpoll 4 maxpoll 4" >> /etc/chrony.conf
-            systemctl restart chronyd
+           # echo "server 169.254.169.123 prefer iburst minpoll 4 maxpoll 4" >> /etc/chrony.conf
+           # systemctl restart chronyd
             ;;
         azure)
-            umount /mnt/resource
-            mount /dev/sdb1 /opt
+           # umount /mnt/resource
+           # mount /dev/sdb1 /opt
             ;;
         gcp)
             ;;
@@ -39,7 +39,7 @@ DOCKERDEVICE=$3
 
 
 echo "-- Configure networking"
-PUBLIC_IP=`curl https://api.ipify.org/`
+#PUBLIC_IP=`curl https://api.ipify.org/`
 hostnamectl set-hostname `hostname -f`
 echo "`hostname -I` `hostname`" >> /etc/hosts
 sed -i "s/HOSTNAME=.*/HOSTNAME=`hostname`/" /etc/sysconfig/network
@@ -150,8 +150,12 @@ yum install -y python-pip
 pip install --upgrade pip
 pip install cm_client
 
+GETIP=`hostname --all-ip-addresses |sed 's/^[ \t]*//;s/[ \t]*$//'`
+GETDOMAIN=`hostname --domain`
+
 sed -i "s/YourHostname/`hostname -f`/g" ~/OneNodeCDHCluster/$TEMPLATE
-sed -i "s/YourCDSWDomain/cdsw.$PUBLIC_IP.nip.io/g" ~/OneNodeCDHCluster/$TEMPLATE
+#sed -i "s/YourCDSWDomain/cdsw.$PUBLIC_IP.nip.io/g" ~/OneNodeCDHCluster/$TEMPLATE
+sed -i "s/YourCDSWDomain/cdsw.$GETDOMAIN/g" ~/OneNodeCDHCluster/$TEMPLATE
 sed -i "s/YourPrivateIP/`hostname -I | tr -d '[:space:]'`/g" ~/OneNodeCDHCluster/$TEMPLATE
 sed -i "s#YourDockerDevice#$DOCKERDEVICE#g" ~/OneNodeCDHCluster/$TEMPLATE
 
@@ -161,6 +165,6 @@ python ~/OneNodeCDHCluster/create_cluster.py $TEMPLATE
 
 # configure and start EFM and Minifi
 service efm start
-service minifi start
+#service minifi start
 
 echo "-- At this point you can login into Cloudera Manager host on port 7180 and follow the deployment of the cluster"
