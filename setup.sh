@@ -82,10 +82,10 @@ mkdir -p /usr/share/java/
 cp ~/mysql-connector-java-5.1.46/mysql-connector-java-5.1.46-bin.jar /usr/share/java/mysql-connector-java.jar
 
 echo "-- Create DBs required by CM"
-mysql -u root < ~/OneNodeCDHCluster/create_db.sql
+mysql -u root < ./create_db.sql
 
 echo "-- Secure MariaDB"
-mysql -u root < ~/OneNodeCDHCluster/secure_mariadb.sql
+mysql -u root < ./secure_mariadb.sql
 
 echo "-- Prepare CM database 'scm'"
 /opt/cloudera/cm/schema/scm_prepare_database.sh mysql scm scm cloudera
@@ -117,9 +117,9 @@ chown -R root:root /opt/cloudera/cem/efm-1.0.0.1.0.0.0-54
 chown -R root:root /opt/cloudera/cem/minifi-0.6.0.1.0.0.0-54
 chown -R root:root /opt/cloudera/cem/minifi-toolkit-0.6.0.1.0.0.0-54
 rm -f /opt/cloudera/cem/efm/conf/efm.properties
-cp ~/OneNodeCDHCluster/efm.properties /opt/cloudera/cem/efm/conf
+cp ./efm.properties /opt/cloudera/cem/efm/conf
 rm -f /opt/cloudera/cem/minifi/conf/bootstrap.conf
-cp ~/OneNodeCDHCluster/bootstrap.conf /opt/cloudera/cem/minifi/conf
+cp ./bootstrap.conf /opt/cloudera/cem/minifi/conf
 sed -i "s/YourHostname/`hostname -f`/g" /opt/cloudera/cem/efm/conf/efm.properties
 sed -i "s/YourHostname/`hostname -f`/g" /opt/cloudera/cem/minifi/conf/bootstrap.conf
 /opt/cloudera/cem/minifi/bin/minifi.sh install
@@ -153,15 +153,15 @@ pip install cm_client
 GETIP=`hostname --all-ip-addresses |sed 's/^[ \t]*//;s/[ \t]*$//'`
 GETDOMAIN=`hostname --domain`
 
-sed -i "s/YourHostname/`hostname -f`/g" ~/OneNodeCDHCluster/$TEMPLATE
+sed -i "s/YourHostname/`hostname -f`/g" ./$TEMPLATE
 #sed -i "s/YourCDSWDomain/cdsw.$PUBLIC_IP.nip.io/g" ~/OneNodeCDHCluster/$TEMPLATE
-sed -i "s/YourCDSWDomain/cdsw.$GETDOMAIN/g" ~/OneNodeCDHCluster/$TEMPLATE
-sed -i "s/YourPrivateIP/`hostname -I | tr -d '[:space:]'`/g" ~/OneNodeCDHCluster/$TEMPLATE
-sed -i "s#YourDockerDevice#$DOCKERDEVICE#g" ~/OneNodeCDHCluster/$TEMPLATE
+sed -i "s/YourCDSWDomain/cdsw.$GETDOMAIN/g" ./$TEMPLATE
+sed -i "s/YourPrivateIP/`hostname -I | tr -d '[:space:]'`/g" ./$TEMPLATE
+sed -i "s#YourDockerDevice#$DOCKERDEVICE#g" ./$TEMPLATE
 
-sed -i "s/YourHostname/`hostname -f`/g" ~/OneNodeCDHCluster/create_cluster.py
+sed -i "s/YourHostname/`hostname -f`/g" ./create_cluster.py
 
-python ~/OneNodeCDHCluster/create_cluster.py $TEMPLATE
+python ./create_cluster.py $TEMPLATE
 
 # configure and start EFM and Minifi
 service efm start
