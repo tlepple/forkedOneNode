@@ -90,6 +90,14 @@ mysql -u root < ./secure_mariadb.sql
 echo "-- Prepare CM database 'scm'"
 /opt/cloudera/cm/schema/scm_prepare_database.sh mysql scm scm cloudera
 
+echo "-- Set ulimits for CDSW"
+ulimit -n 1048576
+echo "fs.file-max=1048576" >> /etc/sysctl.conf
+echo "*               hard    nofile          1048576" >> /etc/security/limits.conf
+echo "*               soft    nofile          1048576" >> /etc/security/limits.conf
+echo "root               hard    nofile          1048576" >> /etc/security/limits.conf
+echo "root               soft    nofile          1048576" >> /etc/security/limits.conf
+
 echo "-- Install CSDs"
 wget https://archive.cloudera.com/CFM/csd/1.0.0.0/NIFI-1.9.0.1.0.0.0-90.jar -P /opt/cloudera/csd/
 wget https://archive.cloudera.com/CFM/csd/1.0.0.0/NIFICA-1.9.0.1.0.0.0-90.jar -P /opt/cloudera/csd/
